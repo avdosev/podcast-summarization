@@ -1,8 +1,8 @@
 from urllib.parse import urlparse
 
-def parse(url):
+def parse(url: str):
     p = urlparse(url)
-    path: str = p.path
+    path = p.path
     path = path.replace('/', ' ').strip()
     items = path.split(' ')
     return dict(make_pairs(items))

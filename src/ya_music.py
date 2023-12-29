@@ -1,9 +1,11 @@
 from yandex_music import ClientAsync
+from yandex_music.utils.request_async import Request
 from config import read_config
 import rest_parser 
+import os
 
 token = read_config()['yamusic_token']
-client = ClientAsync(token)
+client = ClientAsync(token, request=Request(timeout=100))
 inited = False
 
 async def init():
@@ -21,9 +23,11 @@ async def test():
 
 async def download_track(url):
     await init()
-    print(rest_parser.parse(url))
+    info = rest_parser.parse(url)
+    await _download_track(info['album'], info['track'])
 
 async def _download_track(album, track_id):
-    track = await client.tracks([f'{album}:{track_id}'])[0]
-    print(track)
-    await track.download_track()
+    os.makedirs(f'tmp/music/{album}', exist_ok=True)
+    # track = (await client.podcasts(album))
+    track = await client.tracks_download_info(f'{track_id}')
+    await track[0].downloadAsync(f'tmp/music/{album}/{track_id}.mp4')
