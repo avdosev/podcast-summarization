@@ -24,14 +24,15 @@ async def test():
 async def download_track(url):
     await init()
     info = rest_parser.parse(url)
-    await _download_track(info['album'], info['track'])
+    return await _download_track(info['album'], info['track'])
 
 async def _download_track(album, track_id):
     filename = f'tmp/music/{album}/{track_id}.mp4'
     if os.path.exists(filename):
-        return
+        return filename
     
     os.makedirs(f'tmp/music/{album}', exist_ok=True)
     # track = (await client.podcasts(album))
     track = await client.tracks_download_info(f'{track_id}')
     await track[0].downloadAsync(filename)
+    return filename
