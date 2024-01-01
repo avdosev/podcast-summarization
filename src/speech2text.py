@@ -2,10 +2,17 @@ import whisper
 import os
 from pathlib import Path
 
-model = whisper.load_model("medium")
+model = None
+def init():
+    global model
+    if model is not None:
+        return
+    
+    model = whisper.load_model("small")
 
 def transcribe_whisper(filename):
-    result = model.transcribe(filename, temperature=0.0)
+    init()
+    result = model.transcribe(filename)
     return result['text']
 
 

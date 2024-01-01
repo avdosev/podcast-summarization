@@ -2,6 +2,8 @@ import asyncio
 import ya_music
 import speech2text
 import pprint
+from summarize import summarize
+import rest_parser
 
 interests = [
     'https://music.yandex.ru/album/9294155/track/60856985',
@@ -36,9 +38,11 @@ interests = [
 
 async def amain():
     # await ya_music.test()
-    for track_url in interests:
+    for track_url in interests[:4]:
+        track_info = rest_parser.parse(track_url)
         filename = await ya_music.download_track(track_url)
-        # print(speech2text.transcribe(filename))
+        text = speech2text.transcribe(filename)
+        print(await summarize(text, cache_key=f"tmp/summary/{track_info['album']}/{track_info['track']}"))
 
 if __name__ == '__main__':
     loop = asyncio.new_event_loop()
